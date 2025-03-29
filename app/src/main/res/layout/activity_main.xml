@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    app:layoutDescription="@xml/activity_main_scene"
+    tools:context=".activities.MainActivity">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vpCountries"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent=".25"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/llIndicators"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintTop_toBottomOf="@id/vpCountries" />
+
+    <SearchView
+        android:id="@+id/svCities"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/drawable_bg_search"
+        android:iconifiedByDefault="false"
+        android:queryHint="search"
+        android:theme="@style/AppSearchView"
+        app:layout_constraintTop_toBottomOf="@id/llIndicators" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCities"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/svCities" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
