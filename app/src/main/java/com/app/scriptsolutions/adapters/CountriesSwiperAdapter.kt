@@ -1,5 +1,6 @@
 package com.app.scriptsolutions.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,7 @@ class CountriesSwiperAdapter : RecyclerView.Adapter<CountryViewHolder>() {
 
     private var countriesDataList = mutableListOf<CountryModel>()
 
+    @SuppressLint("NotifyDataSetChanged")
     fun submitCountriesData(countriesDataList: MutableList<CountryModel>) {
         this.countriesDataList.clear()
         this.countriesDataList.addAll(countriesDataList)
@@ -22,6 +24,7 @@ class CountriesSwiperAdapter : RecyclerView.Adapter<CountryViewHolder>() {
             parent,
             false
         )
+        binding.ivCountryImage.clipToOutline=true
         return CountryViewHolder(binding)
     }
 
