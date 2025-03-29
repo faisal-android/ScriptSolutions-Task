@@ -1,4 +1,4 @@
-App contains a top image coursal with indicator. Coursal contains GCC countries images. As user changes Coursal item by swiping, A list at bottom shows some of cities of that country. User can search cities by typing in SearchView.
+App contains a top image carousel with indicator and city listing. Carousel contains GCC countries' images. As user changes Coursal item by swiping, A list at bottom shows some of cities of selected country. User can search cities by typing in SearchView.
 
 Task is done without using any third party library. Although it was a small task still I tried to add most of components of Good Design Pattern practices of Android Development like,
 
