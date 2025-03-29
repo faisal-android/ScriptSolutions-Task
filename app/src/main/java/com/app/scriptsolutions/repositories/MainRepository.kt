@@ -5,11 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import com.app.scriptsolutions.data.CityModel
 import com.app.scriptsolutions.data.CountryModel
 import com.app.scriptsolutions.data.DataUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainRepository {
 
-    private var _countriesData = MutableLiveData<MutableList<CountryModel>>()
-    private var _citiesData = MutableLiveData<MutableList<CityModel>>()
+    private var _countriesData = MutableLiveData<MutableList<CountryModel>>(mutableListOf())
+    private var _citiesData = MutableLiveData<MutableList<CityModel>>(mutableListOf())
 
     val countriesData: LiveData<MutableList<CountryModel>>
         get() = _countriesData
@@ -17,16 +20,18 @@ class MainRepository {
     val selectedCountryCitiesData: LiveData<MutableList<CityModel>>
         get() = _citiesData
 
-
     init {
-        _countriesData.value = DataUtil().prepareCountriesData()
-        _citiesData.value= mutableListOf()
+        CoroutineScope(Dispatchers.IO).launch {
+            val countriesData = DataUtil().prepareCountriesData()
+            _countriesData.postValue(countriesData)
+        }
     }
 
     fun filterCountryCities(query: String, selectedCountryPosition: Int) {
         _citiesData.postValue(
             countriesData.value!![selectedCountryPosition].cities.filter {
                 it.name.contains(query, true)
-            }.toMutableList())
+            }.toMutableList()
+        )
     }
 }

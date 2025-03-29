@@ -8,10 +8,10 @@ class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     val countriesData get() = mainRepository.countriesData
     val selectedCountryCitiesData get() = mainRepository.selectedCountryCitiesData
-    var selectedCountryPosition = MutableLiveData(0)
+    var selectedCountryPosition = MutableLiveData(-1)
 
     fun filterCountryCities(query: String) {
-        mainRepository.filterCountryCities(query, selectedCountryPosition.value!!)
+        if (selectedCountryPosition.value!! > -1)
+            mainRepository.filterCountryCities(query, selectedCountryPosition.value!!)
     }
-
 }

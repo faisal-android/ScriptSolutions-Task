@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainViewModel: MainViewModel
     private lateinit var mainRepository: MainRepository
-    private lateinit var dotsImage: Array<ImageView>
+    private lateinit var indicatorImagesArray: Array<ImageView>
     private lateinit var countrySwiperAdapter: CountriesSwiperAdapter
     private lateinit var cityListingAdapter: CitiesListingAdapter
 
@@ -40,31 +40,20 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        prepareViewModel()
         prepareCountryAdapter()
         prepareCityAdapter()
-        prepareDotIndicators()
+        prepareViewModel()
         setListeners()
-    }
-
-    private fun prepareViewModel() {
-        mainRepository = MainRepository()
-        mainViewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(mainRepository)
-        ).get(MainViewModel::class.java)
     }
 
     private fun prepareCountryAdapter() {
         countrySwiperAdapter = CountriesSwiperAdapter()
-        countrySwiperAdapter.submitCountriesData(mainViewModel.countriesData.value!!)
         binding.vpCountries.setOffscreenPageLimit(2)
         binding.vpCountries.adapter = countrySwiperAdapter
     }
 
     private fun prepareCityAdapter() {
         cityListingAdapter = CitiesListingAdapter()
-        cityListingAdapter.submitCitiesData(mainViewModel.selectedCountryCitiesData.value!!)
         binding.rvCities.layoutManager = LinearLayoutManager(this)
         binding.rvCities.adapter = cityListingAdapter
         binding.rvCities.addItemDecoration(
@@ -75,8 +64,30 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private fun prepareViewModel() {
+        mainRepository = MainRepository()
+        mainViewModel = ViewModelProvider(
+            this,
+            MainViewModelFactory(mainRepository)
+        ).get(MainViewModel::class.java)
+
+        mainViewModel.countriesData.observe(this) {
+            prepareDotIndicators()
+            countrySwiperAdapter.submitCountriesData(it)
+        }
+        mainViewModel.selectedCountryCitiesData.observe(this) {
+            cityListingAdapter.submitCitiesData(it)
+        }
+
+        mainViewModel.selectedCountryPosition.observe(this) {
+            binding.svCities.setQuery("", false)
+            queryChangeListener.onQueryTextChange("")
+        }
+    }
+
     private fun prepareDotIndicators() {
-        dotsImage = Array(mainViewModel.countriesData.value!!.size) {
+        binding.llIndicators.removeAllViews()
+        indicatorImagesArray = Array(mainViewModel.countriesData.value!!.size) {
             layoutInflater.inflate(
                 R.layout.indicator_item,
                 binding.llIndicators,
@@ -84,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             ) as ImageView
         }
 
-        dotsImage.forEach {
+        indicatorImagesArray.forEach {
             it.setImageResource(
                 R.drawable.ic_inactive_indicator
             )
@@ -96,36 +107,27 @@ class MainActivity : AppCompatActivity() {
         binding.vpCountries.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                binding.svCities.setQuery("", false)
-                mainViewModel.selectedCountryPosition.postValue(position)
+                mainViewModel.selectedCountryPosition.value = position
+                indicatorImagesArray.forEach {
+                    it.setImageResource(
+                        R.drawable.ic_inactive_indicator
+                    )
+                }
+                indicatorImagesArray[position].setImageResource(R.drawable.ic_active_indicator)
                 super.onPageSelected(position)
             }
         })
+        binding.svCities.setOnQueryTextListener(queryChangeListener)
+    }
 
-        mainViewModel.selectedCountryPosition.observe(this) {
-            dotsImage.forEach {
-                it.setImageResource(
-                    R.drawable.ic_inactive_indicator
-                )
-            }
-            dotsImage[it].setImageResource(R.drawable.ic_active_indicator)
-            mainViewModel.filterCountryCities("")
+    private var queryChangeListener = object : SearchView.OnQueryTextListener {
+        override fun onQueryTextSubmit(query: String?): Boolean {
+            return false
         }
 
-        mainViewModel.selectedCountryCitiesData.observe(this) {
-            cityListingAdapter.submitCitiesData(it)
+        override fun onQueryTextChange(newText: String?): Boolean {
+            mainViewModel.filterCountryCities(newText!!)
+            return false
         }
-
-        binding.svCities.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                mainViewModel.filterCountryCities(newText!!)
-                return false
-            }
-
-        })
     }
 }
