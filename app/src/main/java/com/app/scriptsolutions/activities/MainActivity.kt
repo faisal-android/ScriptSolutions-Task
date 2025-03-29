@@ -22,7 +22,7 @@ import com.app.scriptsolutions.viewmodels.MainViewModelFactory
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding;
     private lateinit var mainViewModel: MainViewModel
     private lateinit var mainRepository: MainRepository
     private lateinit var dotsImage: Array<ImageView>
